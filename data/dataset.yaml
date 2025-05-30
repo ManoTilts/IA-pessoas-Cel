@@ -1,0 +1,25 @@
+# Configuração do Dataset para YOLO
+# Projeto: Detector de Pessoas com Celular
+
+# Caminho base do dataset
+path: ./data
+
+# Caminhos relativos para os conjuntos de dados
+train: images/train
+val: images/val
+test: images/test
+
+# Número de classes
+nc: 3
+
+# Nomes das classes
+names:
+  0: pessoa
+  1: celular
+  2: pessoa_com_celular
+
+# Informações adicionais
+description: "Dataset para detecção de pessoas usando celulares"
+version: "1.0"
+authors: ["Andre Akio Morita Osakawa", "André Franco Ranieri", "Felipe Mazzeo Barbosa", "Fernando Pegoraro Bilia", "Francesco Zangrandi Coppola"]
+license: "MIT" 
