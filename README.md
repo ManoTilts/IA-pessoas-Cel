@@ -30,6 +30,9 @@ O sistema não apenas detecta os objetos, mas também fornece estatísticas deta
 4. Artigo: 
 Um artigo que apresenta o desenvolvimento, funcionamento e resultados do código. Esse pode ser acessado na pasta Docs--> Artigo
 
+4. Uma Apresentacao Sobre o Projeto: 
+Disponivel no Youtube no Link : https://youtu.be/XATvbpidVHg
+
 Tecnologias que Utilizamos
 Para tornar este projeto realidade, trabalhamos com uma combinação de tecnologias modernas:
 
