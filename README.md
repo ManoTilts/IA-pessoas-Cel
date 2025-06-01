@@ -19,11 +19,14 @@ Nosso sistema é composto por várias partes que trabalham em conjunto:
 1. Modelo de Detecção Inteligente
 Criamos um detector baseado no YOLOv8 que consegue identificar três elementos principais: pessoas, celulares e especificamente pessoas usando celulares. O modelo foi treinado com milhares de imagens para garantir alta precisão.
 
-3. Interface Web Interativa
+2. Interface Web Interativa
 Desenvolvemos uma aplicação web usando Streamlit que permite qualquer pessoa usar nosso sistema de forma simples e intuitiva. Você pode carregar uma imagem ou vídeo e ver os resultados imediatamente.
 
-5. Análise Completa de Resultados
+3. Análise Completa de Resultados
 O sistema não apenas detecta os objetos, mas também fornece estatísticas detalhadas, contagens precisas e níveis de confiança para cada detecção.
+
+4. Artigo: 
+Artigo do projeto com explicando 
 
 Tecnologias que Utilizamos
 Para tornar este projeto realidade, trabalhamos com uma combinação de tecnologias modernas:
@@ -34,22 +37,23 @@ PyTorch: O framework de inteligência artificial que alimenta todo o aprendizado
 Streamlit: Para criar uma interface web bonita e funcional
 Python: A linguagem que conecta tudo isso
 
-Como Usar Nosso Sistema
+# Como Usar Nosso Sistema
 Preparando o Ambiente
 Primeiro, você precisa configurar o ambiente em seu computador:
 bash# Baixe o projeto do GitHub
 git clone [https://github.com/ManoTilts/IA-pessoas-Cel.git](https://github.com/ManoTilts/IA-pessoas-Cel.git)
 cd IA-pessoas-Cel
 
-# Crie um ambiente isolado para o projeto
+Crie um ambiente isolado para o projeto
 python -m venv .venv
 
-# Ative o ambiente (no Windows)
+Ative o ambiente (no Windows)
 .venv\Scripts\activate
-# Ou no Linux/Mac
+
+Ou no Linux/Mac
 source .venv/bin/activate
 
-# Instale todas as dependências necessárias
+Instale todas as dependências necessárias
 pip install -r requirements.txt
 Executando a Aplicação Web
 Para usar nossa interface web, simplesmente execute:
@@ -61,7 +65,7 @@ Ver os resultados da detecção em tempo real
 Baixar as análises processadas
 Ajustar configurações como sensibilidade da detecção
 
-Explorando o Código
+# Explorando o Código
 Se você quiser entender como tudo funciona por baixo dos panos, abra nosso notebook principal:
 bashjupyter notebook Projeto_semestral_Yolo.ipynb
 Como Organizamos o Projeto
