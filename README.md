@@ -69,6 +69,7 @@ IA-pessoas-Cel/
 ├── data/                           # Imagens e vídeos para teste
 ├── utils/                          # Código auxiliar organizado
 └── docs/                           # Documentação técnica detalhada
+
 O que Nosso Sistema Consegue Fazer
 Detecções Principais
 Nosso sistema identifica com precisão pessoas, celulares e especificamente pessoas que estão usando celulares. Cada detecção vem com um nível de confiança, para você saber o quão certo o sistema está sobre cada identificação.
