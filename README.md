@@ -10,10 +10,12 @@ Integrantes do Grupo
 10403340 - Francesco Zangrandi Coppola
 
 # Sobre o Projeto
+
 Este projeto teve como objetivo desenvolver um sistema inteligente capaz de detectar automaticamente pessoas que estão utilizando celulares em diferentes ambientes. Utilizamos técnicas avançadas de visão computacional, especificamente o modelo YOLO (You Only Look Once), para criar uma solução que identifica tanto pessoas quanto dispositivos móveis simultaneamente.
 A motivação por trás do projeto surgiu da necessidade de monitorar o uso de dispositivos móveis em locais específicos, como escolas, bibliotecas, locais de trabalho ou eventos, onde pode ser necessário controlar ou quantificar o uso de celulares.
 
-# O que Desenvolvemos
+# O que Desenvolvemos:
+
 Nosso sistema é composto por várias partes que trabalham em conjunto:
 
 1. Modelo de Detecção Inteligente
@@ -38,7 +40,8 @@ Streamlit: Para criar uma interface web bonita e funcional
 Python: A linguagem que conecta tudo isso
 
 
-# Como Usar Nosso Sistema
+# Como Usar Nosso Sistema:
+
 Preparando o Ambiente
 Primeiro, você precisa configurar o ambiente em seu computador:
 bash# Baixe o projeto do GitHub
@@ -66,7 +69,8 @@ Ver os resultados da detecção em tempo real
 Baixar as análises processadas
 Ajustar configurações como sensibilidade da detecção
 
-# Explorando o Código
+# Explorando o Código:
+
 Se você quiser entender como tudo funciona por baixo dos panos, abra nosso notebook principal:
 bashjupyter notebook Projeto_semestral_Yolo.ipynb
 Como Organizamos o Projeto
@@ -87,7 +91,8 @@ IA-pessoas-Cel/
 
 └── docs/                           # Documentação técnica detalhada
 
-# O que Nosso Sistema Consegue Fazer
+# O que Nosso Sistema Consegue Fazer:
+
 Detecções Principais
 Nosso sistema identifica com precisão pessoas, celulares e especificamente pessoas que estão usando celulares. Cada detecção vem com um nível de confiança, para você saber o quão certo o sistema está sobre cada identificação.
 Interface Amigável
@@ -146,8 +151,8 @@ Performance: Equilibrar precisão com velocidade de processamento foi um desafio
 Interface de Usuário: Fazer com que uma tecnologia complexa fosse acessível para qualquer pessoa
 
 # Trabalhos Futuros
-Temos várias ideias para melhorar ainda mais o sistema:
 
+Temos várias ideias para melhorar ainda mais o sistema:
 Detecção de diferentes tipos de dispositivos (tablets, laptops)
 Análise de comportamento (pessoa apenas segurando vs. usando ativamente)
 Integração com câmeras de segurança em tempo real
@@ -155,6 +160,7 @@ Versão mobile do aplicativo
 Análise de múltiplas pessoas interagindo com dispositivos
 
 # Contato e Suporte
+
 Este projeto foi desenvolvido como parte de nossa formação acadêmica, mas estamos orgulhosos do resultado e dispostos a compartilhar conhecimento.
 Para dúvidas ou sugestões:
 
