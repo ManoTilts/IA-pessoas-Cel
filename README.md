@@ -26,7 +26,7 @@ Desenvolvemos uma aplicação web usando Streamlit que permite qualquer pessoa u
 O sistema não apenas detecta os objetos, mas também fornece estatísticas detalhadas, contagens precisas e níveis de confiança para cada detecção.
 
 4. Artigo: 
-Artigo do projeto com explicando 
+Um artigo que apresenta o desenvolvimento, funcionamento e resultados do código. Esse pode ser acessado na pasta Docs--> Artigo
 
 Tecnologias que Utilizamos
 Para tornar este projeto realidade, trabalhamos com uma combinação de tecnologias modernas:
