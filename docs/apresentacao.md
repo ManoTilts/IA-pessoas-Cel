@@ -1,7 +1,7 @@
 # 🎥 Roteiro de Apresentação - Detector de Pessoas com Celular
 
 **Duração:** 3 minutos  
-**Apresentadores:** Adriana Fujita e Daniel Henrique  
+**Apresentadores:** Andre Akio, André Franco, Felipe Mazzeo, Fernando Pegoraro e Francesco Zangrandi  
 **Projeto:** Detecção de Pessoas com Celular usando YOLO
 
 ---
@@ -12,170 +12,161 @@
 
 | Tempo | Seção | Responsável | Conteúdo |
 |-------|-------|-------------|----------|
-| 0:00-0:30 | Introdução | Adriana | Apresentação do projeto e objetivos |
-| 0:30-1:30 | Demonstração | Daniel | Interface Streamlit e funcionalidades |
-| 1:30-2:30 | Resultados | Adriana | Métricas e análise de performance |
-| 2:30-3:00 | Conclusão | Daniel | Considerações finais e trabalhos futuros |
+| 0:00-0:45 | Introdução | Andre Akio | Apresentação do projeto, problema e objetivos |
+| 0:45-1:30 | Tecnologias | André Franco | Stack tecnológica e arquitetura |
+| 1:30-2:15 | Demonstração | Felipe | Interface Streamlit e funcionalidades |
+| 2:15-2:45 | Aplicações | Fernando | Casos de uso e potencial prático |
+| 2:45-3:00 | Conclusão | Francesco | Aprendizados e trabalhos futuros |
 
 ---
 
 ## 🎬 Roteiro Detalhado
 
-### 📍 **INTRODUÇÃO (0:00 - 0:30) - Adriana**
+### 📍 **INTRODUÇÃO (0:00 - 0:45) - Andre Akio**
 
 **[SLIDE: Título do Projeto]**
 
-> "Olá! Somos Adriana Fujita e Daniel Henrique, estudantes da Universidade Presbiteriana Mackenzie. Hoje apresentamos nosso projeto de Inteligência Artificial: um **Detector de Pessoas com Celular usando YOLO**."
+> "Olá! Somos Andre Akio, André Franco, Felipe Mazzeo, Fernando Pegoraro e Francesco Zangrandi, estudantes da Universidade Presbiteriana Mackenzie. Apresentamos nosso projeto de IA: **Detector de Pessoas com Celular usando YOLO**."
 
 **[SLIDE: Problema e Motivação]**
 
-> "Com a crescente ubiquidade dos dispositivos móveis, surge a necessidade de monitorar automaticamente o uso de celulares em diversos ambientes - desde salas de aula até ambientes corporativos."
+> "Com smartphones presentes em todos os lugares, surge a necessidade de monitorar automaticamente seu uso em diversos contextos - escolas, empresas, eventos e pesquisas comportamentais."
 
 **[SLIDE: Objetivos]**
 
-> "Nosso objetivo foi desenvolver um sistema inteligente capaz de detectar pessoas, celulares e pessoas usando celulares em tempo real, utilizando técnicas de visão computacional com YOLOv8."
+> "Desenvolvemos um sistema inteligente que detecta pessoas, celulares e especificamente pessoas usando celulares, utilizando visão computacional com YOLOv8. O foco foi criar uma solução prática e acessível."
 
 ---
 
-### 🖥️ **DEMONSTRAÇÃO (0:30 - 1:30) - Daniel**
+### 🛠️ **TECNOLOGIAS (0:45 - 1:30) - André Franco**
 
-**[TELA: Aplicação Streamlit]**
+**[SLIDE: Stack Tecnológica]**
 
-> "Desenvolvemos uma aplicação web completa usando Streamlit. Vou demonstrar as principais funcionalidades:"
-
-**[DEMO: Upload de Imagem]**
-
-> "Primeiro, podemos fazer upload de uma imagem. O sistema processa automaticamente e identifica pessoas e celulares com bounding boxes coloridos."
-
-**[DEMO: Configurações]**
-
-> "Na barra lateral, podemos ajustar a confiança mínima das detecções e escolher entre modelo pré-treinado ou customizado."
-
-**[DEMO: Métricas]**
-
-> "Os resultados são apresentados em tempo real: número de pessoas, celulares detectados e pessoas usando celulares, além de detalhes técnicos de cada detecção."
-
-**[DEMO: Análise de Vídeo]**
-
-> "Para vídeos, o sistema processa frame por frame e gera gráficos temporais mostrando a evolução das detecções ao longo do tempo."
-
----
-
-### 📊 **RESULTADOS (1:30 - 2:30) - Adriana**
-
-**[SLIDE: Métricas de Performance]**
-
-> "Nossos resultados são promissores. Alcançamos **85% de precisão média** nas três classes: pessoas, celulares e pessoas com celulares."
-
-**[SLIDE: Tabela de Resultados]**
-
-> "O tempo de inferência médio é de apenas **42 milissegundos por frame**, permitindo processamento em tempo real com até 24 FPS."
-
-**[SLIDE: Tecnologias Utilizadas]**
-
-> "Utilizamos YOLOv8 da Ultralytics como modelo base, OpenCV para processamento de imagens, e Streamlit para a interface web interativa."
+> "Nossa solução combina tecnologias modernas de IA. Utilizamos **YOLOv8** da Ultralytics como base, conhecido por sua velocidade e eficiência em detecção de objetos em tempo real."
 
 **[SLIDE: Arquitetura do Sistema]**
 
-> "A arquitetura é modular, separando a detecção, processamento de dados e interface, facilitando manutenção e expansões futuras."
+> "A arquitetura é modular: entrada de dados, processamento com YOLO, e interface web. Usamos **PyTorch** para deep learning, **OpenCV** para processamento de imagens, e **Streamlit** para a interface."
+
+**[SLIDE: Pipeline de Desenvolvimento]**
+
+> "Começamos com um modelo YOLOv8 pré-treinado no dataset COCO, adaptamos com transfer learning para nosso domínio específico, e criamos um dataset personalizado com anotações precisas usando Roboflow."
 
 ---
 
-### 🔮 **CONCLUSÃO (2:30 - 3:00) - Daniel**
+### 🖥️ **DEMONSTRAÇÃO (1:30 - 2:15) - Felipe**
 
-**[SLIDE: Aplicações Práticas]**
+**[TELA: Aplicação Streamlit]**
 
-> "Este sistema tem diversas aplicações práticas: monitoramento educacional, análise comportamental, controle de qualidade em ambientes de trabalho e pesquisa acadêmica."
+> "Criamos uma aplicação web completa e intuitiva. Vou mostrar as principais funcionalidades do nosso sistema:"
 
-**[SLIDE: Trabalhos Futuros]**
+**[DEMO: Interface Principal]**
 
-> "Como trabalhos futuros, planejamos implementar tracking de objetos, expandir para dispositivos móveis e integrar com sistemas IoT."
+> "A interface permite upload simples de imagens nos formatos mais comuns. O processamento é automático e os resultados aparecem instantaneamente com bounding boxes coloridos."
+
+**[DEMO: Configurações Avançadas]**
+
+> "Os usuários podem ajustar configurações como limiar de confiança, escolher entre modelo base ou customizado, e personalizar a visualização das detecções."
+
+**[DEMO: Análise de Resultados]**
+
+> "O sistema fornece estatísticas detalhadas: contagem de pessoas, celulares detectados, pessoas usando celulares, e informações de confiança para cada detecção. Para vídeos, geramos gráficos temporais mostrando a evolução das detecções."
+
+---
+
+### 🎯 **APLICAÇÕES (2:15 - 2:45) - Fernando**
+
+**[SLIDE: Casos de Uso Práticos]**
+
+> "Nosso sistema tem aplicações em múltiplas áreas. Na **educação**, pode monitorar uso de celulares em salas de aula. Em **segurança**, controla áreas onde dispositivos são restritos."
+
+**[SLIDE: Pesquisa e Análise]**
+
+> "Para **pesquisa comportamental**, oferece dados objetivos sobre padrões de uso de dispositivos. Em **ambientes corporativos**, pode analisar distração ou engajamento em reuniões."
+
+**[SLIDE: Características Diferenciais]**
+
+> "Nosso diferencial é a **facilidade de uso** - qualquer pessoa pode usar sem conhecimento técnico. É **open source**, completamente documentado, e funciona tanto com imagens quanto vídeos."
+
+---
+
+### 🔮 **CONCLUSÃO (2:45 - 3:00) - Francesco**
+
+**[SLIDE: Aprendizados]**
+
+> "Este projeto nos ensinou muito sobre visão computacional prática. Aprendemos que transfer learning é eficaz, a qualidade dos dados é fundamental, e interfaces amigáveis são cruciais para adoção."
+
+**[SLIDE: Próximos Passos]**
+
+> "Como evolução, planejamos implementar tracking de objetos, expansão para detecção de outros dispositivos, e integração com sistemas IoT para monitoramento contínuo."
 
 **[SLIDE: Agradecimentos]**
 
-> "Agradecemos à Universidade Mackenzie e ao professor pela oportunidade. O código está disponível no GitHub para a comunidade. Obrigado!"
+> "Agradecemos à Universidade Mackenzie e nossos professores. O projeto completo está no GitHub para a comunidade usar e contribuir. Demonstramos que IA pode resolver problemas reais de forma acessível!"
 
 ---
 
 ## 🎯 **Pontos-Chave a Destacar**
 
 ### ✅ **Aspectos Técnicos**
-- Uso do YOLOv8 para detecção em tempo real
-- Interface web intuitiva e responsiva
-- Processamento de imagens e vídeos
-- Métricas de performance robustas
+- Transfer learning com YOLOv8
+- Interface web responsiva e intuitiva
+- Processamento de múltiplos formatos
+- Arquitetura modular e escalável
 
 ### ✅ **Diferenciais do Projeto**
 - Sistema completo end-to-end
-- Interface acessível para usuários não-técnicos
-- Documentação abrangente
-- Código open source
+- Interface acessível para não-técnicos
+- Documentação completa e detalhada
+- Projeto open source disponível
 
-### ✅ **Resultados Práticos**
-- 85% de precisão média
-- 42ms de tempo de inferência
-- Processamento em tempo real
-- Análise estatística detalhada
+### ✅ **Valor Prático**
+- Aplicações em múltiplos domínios
+- Ferramenta pronta para uso
+- Base sólida para pesquisas futuras
+- Demonstração de IA aplicada
 
----
 
-## 🎬 **Dicas para Gravação**
 
-### 📹 **Aspectos Visuais**
-- **Resolução:** Mínimo 1080p
-- **Enquadramento:** Apresentadores visíveis, tela compartilhada
-- **Iluminação:** Boa iluminação frontal
-- **Fundo:** Limpo e profissional
+## 🎯 **Distribuição de Responsabilidades**
 
-### 🎤 **Aspectos de Áudio**
-- **Microfone:** Usar microfone externo se possível
-- **Ambiente:** Local silencioso
-- **Dicção:** Falar claramente e em ritmo adequado
-- **Volume:** Testar níveis antes da gravação
+### **Andre Akio (Introdução):**
+- Contextualização do problema
+- Apresentação dos objetivos
+- Motivação do projeto
 
-### 💻 **Aspectos Técnicos**
-- **Demonstração:** Preparar dados de exemplo
-- **Transições:** Suaves entre slides e demonstrações
-- **Backup:** Ter screenshots caso a demo falhe
-- **Tempo:** Ensaiar para respeitar os 3 minutos
+### **André Franco (Tecnologias):**
+- Stack tecnológica utilizada
+- Arquitetura do sistema
+- Pipeline de desenvolvimento
 
----
+### **Felipe (Demonstração):**
+- Interface Streamlit
+- Funcionalidades principais
+- Experiência do usuário
 
-## 📝 **Checklist Pré-Gravação**
+### **Fernando (Aplicações):**
+- Casos de uso práticos
+- Valor do projeto
+- Diferencial competitivo
 
-### ✅ **Preparação Técnica**
-- [ ] Aplicação Streamlit funcionando
-- [ ] Dados de exemplo preparados
-- [ ] Slides organizados e revisados
-- [ ] Conexão de internet estável
-- [ ] Software de gravação testado
-
-### ✅ **Preparação de Conteúdo**
-- [ ] Roteiro ensaiado
-- [ ] Timing verificado
-- [ ] Transições definidas
-- [ ] Pontos-chave memorizados
-- [ ] Demonstrações testadas
-
-### ✅ **Preparação Pessoal**
-- [ ] Vestimenta adequada
-- [ ] Ambiente organizado
-- [ ] Equipamentos testados
-- [ ] Backup de energia
-- [ ] Água disponível
+### **Francesco (Conclusão):**
+- Aprendizados obtidos
+- Trabalhos futuros
+- Agradecimentos
 
 ---
 
 ## 🎯 **Mensagem Principal**
 
-> "Desenvolvemos um sistema completo e funcional que demonstra o poder da visão computacional aplicada a problemas reais, combinando tecnologia de ponta com interface acessível para criar uma ferramenta valiosa para pesquisadores, educadores e profissionais."
+> "Demonstramos como tecnologias modernas de IA podem ser aplicadas para resolver problemas reais de forma prática e acessível. Nosso sistema combina eficiência técnica com usabilidade, criando uma ferramenta valiosa para diversos contextos profissionais e acadêmicos."
 
 ---
 
 ## 📱 **Call to Action**
 
-> "Convidamos a comunidade a explorar nosso código no GitHub, experimentar a aplicação e contribuir com melhorias. Juntos, podemos expandir as aplicações da inteligência artificial em benefício da sociedade."
+> "Convidamos todos a explorar nosso projeto no GitHub, testar a aplicação web e contribuir com melhorias. Acreditamos que projetos open source impulsionam a inovação e democratizam o acesso à tecnologia."
 
 ---
 
-**🎬 Boa sorte na gravação! 🎬** 
+**🎬 Sucesso na apresentação! 🎬** 

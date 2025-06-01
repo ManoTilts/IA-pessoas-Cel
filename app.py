@@ -9,19 +9,70 @@ Esta aplicação web permite:
 - Download de relatórios
 """
 
-import streamlit as st
-import cv2
-import numpy as np
-from PIL import Image
-import tempfile
+import warnings
 import os
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from utils.detector import PersonPhoneDetector
-from utils.data_utils import DataProcessor
-import json
+import sys
+import logging
 
+# Configurar supressão completa de warnings ANTES de importar qualquer coisa
+warnings.filterwarnings("ignore")
+warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=".*torch.classes.*")
+warnings.filterwarnings("ignore", message=".*RuntimeError.*")
+warnings.filterwarnings("ignore", message=".*running event loop.*")
+
+# Configurar variáveis de ambiente para supressão
+os.environ['PYTHONWARNINGS'] = 'ignore'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['ULTRALYTICS_QUIET'] = 'true'
+
+# Configurar logging para suprimir mensagens do PyTorch/Ultralytics
+logging.getLogger("ultralytics").setLevel(logging.ERROR)
+logging.getLogger("torch").setLevel(logging.ERROR)
+logging.getLogger("PIL").setLevel(logging.ERROR)
+
+# Suprimir stderr temporariamente para imports
+from io import StringIO
+import contextlib
+
+@contextlib.contextmanager
+def suppress_output():
+    """Context manager para suprimir output temporariamente."""
+    with open(os.devnull, "w") as devnull:
+        old_stderr = sys.stderr
+        old_stdout = sys.stdout
+        sys.stderr = devnull
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stderr = old_stderr
+            sys.stdout = old_stdout
+
+# Imports principais com supressão
+with suppress_output():
+    import streamlit as st
+    import cv2
+    import numpy as np
+    from PIL import Image
+    import tempfile
+    import pandas as pd
+    import plotly.express as px
+    import plotly.graph_objects as go
+    from utils.detector import PersonPhoneDetector
+    from utils.data_utils import DataProcessor
+    import json
+
+# Configurar avisos do Streamlit
+try:
+    st.set_option('deprecation.showPyplotGlobalUse', False)
+    st.set_option('deprecation.showfileUploaderEncoding', False)
+    st.set_option('client.showErrorDetails', False)
+except Exception:
+    pass
 
 # Configuração da página
 st.set_page_config(
@@ -150,36 +201,65 @@ st.sidebar.info("""
 def load_detector():
     """Carrega o detector YOLO com configurações melhoradas."""
     try:
+        
         # Verificar se existe modelo customizado
         if model_option == "Modelo Customizado":
             model_path = "models/best_model.pt"
             if os.path.exists(model_path):
+                print(f" Modelo customizado encontrado: {model_path}")
                 detector = PersonPhoneDetector(model_path, confidence)
-                st.sidebar.success(" Modelo customizado carregado!")
-                
-                # Mostrar informações do modelo
-                with st.sidebar.expander("ℹ Informações do Modelo"):
-                    model_info = detector.get_model_info()
-                    for key, value in model_info.items():
-                        st.write(f"**{key.replace('_', ' ').title()}:** {value}")
-                
-                return detector
+                if detector.model is not None:
+                    st.sidebar.success(" Modelo customizado carregado!")
+                    
+                    # Mostrar informações do modelo
+                    with st.sidebar.expander("ℹ Informações do Modelo"):
+                        model_info = detector.get_model_info()
+                        for key, value in model_info.items():
+                            st.write(f"**{key.replace('_', ' ').title()}:** {value}")
+                    
+                    return detector
+                else:
+                    print(" Falha ao carregar modelo customizado")
+                    st.sidebar.error(" Falha ao carregar modelo customizado")
+                    return None
             else:
+                print(" Modelo customizado não encontrado, tentando pré-treinado")
                 st.sidebar.warning(" Modelo customizado não encontrado, usando pré-treinado")
         
+        print(" Carregando modelo pré-treinado...")
         detector = PersonPhoneDetector(None, confidence)
-        st.sidebar.success(" Modelo pré-treinado carregado!")
         
-        # Mostrar informações do modelo
-        with st.sidebar.expander("ℹ Informações do Modelo"):
-            model_info = detector.get_model_info()
-            for key, value in model_info.items():
-                st.write(f"**{key.replace('_', ' ').title()}:** {value}")
-        
-        return detector
+        if detector.model is not None:
+            print(" Modelo pré-treinado carregado com sucesso!")
+            st.sidebar.success(" Modelo pré-treinado carregado!")
+            
+            # Mostrar informações do modelo
+            with st.sidebar.expander("ℹ Informações do Modelo"):
+                model_info = detector.get_model_info()
+                for key, value in model_info.items():
+                    st.write(f"**{key.replace('_', ' ').title()}:** {value}")
+            
+            return detector
+        else:
+            print(" Falha ao carregar modelo pré-treinado")
+            st.sidebar.error(" Falha ao carregar modelo pré-treinado")
+            return None
         
     except Exception as e:
-        st.sidebar.error(f" Erro ao carregar modelo: {e}")
+        error_msg = f" Erro ao carregar modelo: {str(e)}"
+        print(error_msg)
+        st.sidebar.error(error_msg)
+        
+        # Mostrar detalhes do erro para debug
+        import traceback
+        full_error = traceback.format_exc()
+        print(f" Traceback completo:\n{full_error}")
+        
+        # Mostrar erro na interface apenas se for diferente de torch.classes
+        if "torch.classes" not in str(e):
+            with st.sidebar.expander(" Detalhes do Erro", expanded=False):
+                st.code(full_error, language="python")
+        
         return None
 
 # Carregar detector
@@ -213,7 +293,7 @@ if detector:
             
             with col1:
                 st.subheader(" Imagem Original")
-                st.image(image, use_column_width=True)
+                st.image(image, use_container_width=True)
                 
                 # Informações da imagem
                 st.info(f"""
@@ -247,7 +327,7 @@ if detector:
                             annotated_img = detector.annotate_image(img_array, results)
                             
                             # Mostrar resultado
-                            st.image(annotated_img, use_column_width=True)
+                            st.image(annotated_img, use_container_width=True)
                             
                             # Obter detalhes das detecções
                             detection_details = detector.get_detection_details(results)
@@ -290,11 +370,11 @@ if detector:
                 )
             
             with col4:
-                total_detections = people + phones + people_with_phones
+                total_detections = people + phones  
                 st.metric(
                     label="🔍 Total de Detecções",
                     value=total_detections,
-                    help="Soma de todas as detecções"
+                    help="Soma de todas as detecções (pessoas + celulares)"
                 )
             
             # Detalhes das detecções
@@ -562,7 +642,7 @@ if detector:
             Faculdade de Computação e Informática
             
             **Disciplina:**
-            Inteligência Artificial - 2024
+            Inteligência Artificial - 2025
             """)
             
             st.subheader(" Como Usar")
@@ -596,7 +676,7 @@ st.markdown(
     """
     <div style='text-align: center; color: #666;'>
         📱 Detector de Pessoas com Celular | Desenvolvido com usando Streamlit<br>
-        Universidade Presbiteriana Mackenzie - 2024
+        Universidade Presbiteriana Mackenzie - 2025
     </div>
     """, 
     unsafe_allow_html=True

@@ -1,7 +1,7 @@
 detection_settings:
   agnostic_nms: false
   conf_thresholds:
-    cell_phone: 0.25
+    cell_phone: 0.15
     default: 0.4
     person: 0.5
   max_detections: 100
