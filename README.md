@@ -62,12 +62,19 @@ bashjupyter notebook Projeto_semestral_Yolo.ipynb
 Como Organizamos o Projeto
 IA-pessoas-Cel/
 ├── Projeto_semestral_Yolo.ipynb    # Todo o código principal explicado passo a passo
+
 ├── app.py                          # Nossa aplicação web
+
 ├── requirements.txt                # Lista de todas as bibliotecas necessárias
+
 ├── README.md                       # Este arquivo que você está lendo
+
 ├── models/                         # Onde guardamos nossos modelos treinados
+
 ├── data/                           # Imagens e vídeos para teste
+
 ├── utils/                          # Código auxiliar organizado
+
 └── docs/                           # Documentação técnica detalhada
 
 O que Nosso Sistema Consegue Fazer
