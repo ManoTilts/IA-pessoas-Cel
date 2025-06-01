@@ -9,17 +9,22 @@ Integrantes do Grupo
 10402097 - Fernando Pegoraro Bilia
 10403340 - Francesco Zangrandi Coppola
 
-Sobre o Projeto
+# Sobre o Projeto
 Este projeto teve como objetivo desenvolver um sistema inteligente capaz de detectar automaticamente pessoas que estão utilizando celulares em diferentes ambientes. Utilizamos técnicas avançadas de visão computacional, especificamente o modelo YOLO (You Only Look Once), para criar uma solução que identifica tanto pessoas quanto dispositivos móveis simultaneamente.
 A motivação por trás do projeto surgiu da necessidade de monitorar o uso de dispositivos móveis em locais específicos, como escolas, bibliotecas, locais de trabalho ou eventos, onde pode ser necessário controlar ou quantificar o uso de celulares.
-O que Desenvolvemos
+
+# O que Desenvolvemos
 Nosso sistema é composto por várias partes que trabalham em conjunto:
+
 1. Modelo de Detecção Inteligente
 Criamos um detector baseado no YOLOv8 que consegue identificar três elementos principais: pessoas, celulares e especificamente pessoas usando celulares. O modelo foi treinado com milhares de imagens para garantir alta precisão.
-2. Interface Web Interativa
+
+3. Interface Web Interativa
 Desenvolvemos uma aplicação web usando Streamlit que permite qualquer pessoa usar nosso sistema de forma simples e intuitiva. Você pode carregar uma imagem ou vídeo e ver os resultados imediatamente.
-3. Análise Completa de Resultados
+
+5. Análise Completa de Resultados
 O sistema não apenas detecta os objetos, mas também fornece estatísticas detalhadas, contagens precisas e níveis de confiança para cada detecção.
+
 Tecnologias que Utilizamos
 Para tornar este projeto realidade, trabalhamos com uma combinação de tecnologias modernas:
 
@@ -77,7 +82,7 @@ IA-pessoas-Cel/
 
 └── docs/                           # Documentação técnica detalhada
 
-O que Nosso Sistema Consegue Fazer
+# O que Nosso Sistema Consegue Fazer
 Detecções Principais
 Nosso sistema identifica com precisão pessoas, celulares e especificamente pessoas que estão usando celulares. Cada detecção vem com um nível de confiança, para você saber o quão certo o sistema está sobre cada identificação.
 Interface Amigável
@@ -87,7 +92,8 @@ Além de apenas detectar objetos, nosso sistema fornece estatísticas completas:
 Os Dados que Utilizamos
 Para treinar nosso modelo, trabalhamos com diferentes fontes de dados:
 
-Dataset COCO: Uma base de dados mundialmente reconhecida que já contém milhares de imagens de pessoas e celulares
+Dataset COCO: 
+Uma base de dados mundialmente reconhecida que já contém milhares de imagens de pessoas e celulares
 Dataset Personalizado: Coletamos e anotamos nossas próprias imagens para casos específicos
 Aproximadamente 5000 imagens: Cada uma cuidadosamente marcada com as localizações exatas de pessoas e celulares
 
@@ -95,20 +101,21 @@ Utilizamos o Roboflow, uma ferramenta profissional, para marcar precisamente ond
 Nossa Metodologia
 Preparação Cuidadosa dos Dados
 Não bastava apenas ter muitas imagens. Precisamos organizá-las, marcá-las corretamente e criar variações para que o modelo pudesse aprender diferentes situações: pessoas em ambientes claros e escuros, celulares de diferentes tipos, pessoas em diferentes posições.
+
 Treinamento Inteligente
 Começamos com um modelo YOLO que já sabia identificar objetos gerais, e então o ensinamos especificamente sobre nossa tarefa. Foi como pegar um estudante que já conhece o básico e especializá-lo em nossa área específica.
-Testes Rigorosos
+
+Testes Rigorosos:
 Testamos nosso sistema de várias formas: com imagens que ele nunca viu antes, com vídeos em tempo real, e medimos não apenas se ele acerta, mas quão confiante ele está em suas respostas.
 Resultados que Conseguimos
 Nossos testes mostraram resultados muito promissores:
-Com o Modelo Pré-treinado:
 
+Modelo Pré-treinado:
 Detecta pessoas com cerca de 90% de precisão
 Identifica celulares com cerca de 85% de precisão
 Processa mais de 30 imagens por segundo em um computador comum
 
 Com Nosso Modelo Personalizado:
-
 Identifica pessoas usando celulares com cerca de 85% de precisão
 Funciona em tempo real para aplicações práticas
 
@@ -133,7 +140,7 @@ Balanceamento: Precisamos garantir que o modelo visse exemplos suficientes de to
 Performance: Equilibrar precisão com velocidade de processamento foi um desafio constante
 Interface de Usuário: Fazer com que uma tecnologia complexa fosse acessível para qualquer pessoa
 
-Trabalhos Futuros
+# Trabalhos Futuros
 Temos várias ideias para melhorar ainda mais o sistema:
 
 Detecção de diferentes tipos de dispositivos (tablets, laptops)
@@ -142,7 +149,7 @@ Integração com câmeras de segurança em tempo real
 Versão mobile do aplicativo
 Análise de múltiplas pessoas interagindo com dispositivos
 
-Contato e Suporte
+# Contato e Suporte
 Este projeto foi desenvolvido como parte de nossa formação acadêmica, mas estamos orgulhosos do resultado e dispostos a compartilhar conhecimento.
 Para dúvidas ou sugestões:
 
