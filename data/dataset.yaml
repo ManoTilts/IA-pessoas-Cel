@@ -1,25 +1,17 @@
-# Configuração do Dataset para YOLO
-# Projeto: Detector de Pessoas com Celular
-
-# Caminho base do dataset
-path: ./data
-
-# Caminhos relativos para os conjuntos de dados
+detection_settings:
+  agnostic_nms: false
+  conf_thresholds:
+    cell_phone: 0.25
+    default: 0.4
+    person: 0.5
+  max_detections: 100
+  nms_threshold: 0.4
+names:
+  0: person
+  67: cell phone
+  999: person_with_phone
+nc: 2
+path: c:\Users\febar\Documents\programinhas\IA\IA-pessoas-Cel\data
+test: images/test
 train: images/train
 val: images/val
-test: images/test
-
-# Número de classes
-nc: 3
-
-# Nomes das classes
-names:
-  0: pessoa
-  1: celular
-  2: pessoa_com_celular
-
-# Informações adicionais
-description: "Dataset para detecção de pessoas usando celulares"
-version: "1.0"
-authors: ["Andre Akio Morita Osakawa", "André Franco Ranieri", "Felipe Mazzeo Barbosa", "Fernando Pegoraro Bilia", "Francesco Zangrandi Coppola"]
-license: "MIT" 
