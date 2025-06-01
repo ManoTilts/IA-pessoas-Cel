@@ -37,6 +37,7 @@ PyTorch: O framework de inteligência artificial que alimenta todo o aprendizado
 Streamlit: Para criar uma interface web bonita e funcional
 Python: A linguagem que conecta tudo isso
 
+
 # Como Usar Nosso Sistema
 Preparando o Ambiente
 Primeiro, você precisa configurar o ambiente em seu computador:
