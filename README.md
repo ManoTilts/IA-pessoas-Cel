@@ -33,7 +33,7 @@ Como Usar Nosso Sistema
 Preparando o Ambiente
 Primeiro, você precisa configurar o ambiente em seu computador:
 bash# Baixe o projeto do GitHub
-git clone https://github.com/seu-usuario/IA-pessoas-Cel.git
+git clone [https://github.com/ManoTilts/IA-pessoas-Cel.git](https://github.com/ManoTilts/IA-pessoas-Cel.git)
 cd IA-pessoas-Cel
 
 # Crie um ambiente isolado para o projeto
@@ -62,13 +62,21 @@ bashjupyter notebook Projeto_semestral_Yolo.ipynb
 Como Organizamos o Projeto
 IA-pessoas-Cel/
 ├── Projeto_semestral_Yolo.ipynb    # Todo o código principal explicado passo a passo
+
 ├── app.py                          # Nossa aplicação web
+
 ├── requirements.txt                # Lista de todas as bibliotecas necessárias
+
 ├── README.md                       # Este arquivo que você está lendo
+
 ├── models/                         # Onde guardamos nossos modelos treinados
+
 ├── data/                           # Imagens e vídeos para teste
+
 ├── utils/                          # Código auxiliar organizado
+
 └── docs/                           # Documentação técnica detalhada
+
 O que Nosso Sistema Consegue Fazer
 Detecções Principais
 Nosso sistema identifica com precisão pessoas, celulares e especificamente pessoas que estão usando celulares. Cada detecção vem com um nível de confiança, para você saber o quão certo o sistema está sobre cada identificação.
