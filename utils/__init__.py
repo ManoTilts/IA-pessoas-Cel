@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-Utilitários para o projeto de detecção de pessoas com celular usando YOLO.
-
-Este pacote contém classes e funções auxiliares para:
-- Detecção de objetos com YOLO
-- Processamento de dados
-- Visualização de resultados
+Módulo Utils - Utilitários do Projeto YOLO
 """
 
 from .detector import PersonPhoneDetector
-from .data_utils import DataProcessor
+from .data_utils import DataProcessor, create_sample_data
 
 __version__ = "1.0.0"
 __author__ = "Adriana Fujita, Daniel Henrique"
 
 __all__ = [
     "PersonPhoneDetector",
-    "DataProcessor"
+    "DataProcessor",
+    "create_sample_data"
 ] 

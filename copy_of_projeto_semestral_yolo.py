@@ -319,6 +319,78 @@ def verificar_dataset():
 # Verificação do dataset
 tem_dados = verificar_dataset()
 
+# Função para baixar imagens de demonstração se não houver dados
+def baixar_dados_demonstracao():
+    """Baixa imagens de demonstração se não houver dados disponíveis."""
+    if tem_dados:
+        print("Dados locais disponíveis, pulando download.")
+        return True
+    
+    print("\n📥 Baixando imagens de demonstração...")
+    
+    try:
+        import urllib.request
+        import os
+        
+        # URLs de imagens de exemplo (pessoas com celulares)
+        sample_urls = [
+            "https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=640&h=480&fit=crop",
+            "https://images.unsplash.com/photo-1556157382-97eda2d62296?w=640&h=480&fit=crop", 
+            "https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=640&h=480&fit=crop",
+            "https://images.unsplash.com/photo-1423784346385-c1d4dac9893a?w=640&h=480&fit=crop",
+        ]
+        
+        download_count = 0
+        
+        for i, url in enumerate(sample_urls):
+            try:
+                filename = f"sample_{i+1}.jpg"
+                filepath = os.path.join(images_path, filename)
+                
+                print(f"   Baixando {filename}...")
+                urllib.request.urlretrieve(url, filepath)
+                download_count += 1
+                
+            except Exception as e:
+                print(f"   ⚠️ Erro ao baixar {filename}: {e}")
+                continue
+        
+        if download_count > 0:
+            print(f"✅ {download_count} imagens baixadas com sucesso!")
+            print("🔄 Verificando dataset novamente...")
+            return verificar_dataset()
+        else:
+            print("❌ Nenhuma imagem foi baixada. Criando demonstração local...")
+            return criar_imagens_demo() is not None
+            
+    except ImportError:
+        print("⚠️ urllib não disponível. Criando demonstração local...")
+        return criar_imagens_demo() is not None
+    except Exception as e:
+        print(f"❌ Erro no download: {e}")
+        print("🔄 Criando demonstração local...")
+        return criar_imagens_demo() is not None
+
+# Tentar baixar dados de demonstração se necessário
+if not tem_dados:
+    print("\n🔍 Nenhuma imagem encontrada localmente.")
+    print("💡 Opções disponíveis:")
+    print("   1. Baixar imagens de demonstração")
+    print("   2. Criar imagem sintética") 
+    print("   3. Adicionar suas próprias imagens em data/images/")
+    
+    tem_dados = baixar_dados_demonstracao()
+
+# NOTA: Para projeto universitário, as funções de upload foram simplificadas
+# O modelo YOLOv8 pré-treinado já detecta pessoas e celulares sem treinamento adicional
+
+# Para adicionar imagens de teste (opcional):
+# 1. Coloque imagens na pasta data/images/test/
+# 2. Execute: executar_testes_novamente()
+
+print("Modelo YOLOv8 pronto para usar!")
+print("Execute a seção de testes para ver o modelo funcionando!")
+
 """
 PREPARAÇÃO E TRANSFORMAÇÃO DOS DADOS
 
@@ -959,26 +1031,134 @@ def criar_imagens_demo():
 # Testar modelo com dados disponíveis ou demonstração
 print("\nTestando modelo...")
 
-# Procurar por imagens de teste
-test_images = []
-if val_count > 0:
-    val_path = os.path.join(images_path, 'val')
-    test_images = [os.path.join(val_path, f) for f in os.listdir(val_path)
-                  if f.lower().endswith(('.jpg', '.png', '.jpeg'))][:3]
-elif test_count > 0:
+# Função melhorada para encontrar imagens de teste
+def encontrar_imagens_teste():
+    """Encontra imagens para teste com prioridade para data/images/test."""
+    test_images = []
+    source_info = ""
+    
+    # PRIORIDADE 1: Imagens fornecidas pelo usuário em data/images/test
     test_path = os.path.join(images_path, 'test')
-    test_images = [os.path.join(test_path, f) for f in os.listdir(test_path)
-                  if f.lower().endswith(('.jpg', '.png', '.jpeg'))][:3]
-elif tem_dados:
-    # Usar imagens da pasta raiz
-    test_images = [os.path.join(images_path, f) for f in os.listdir(images_path)
-                  if f.lower().endswith(('.jpg', '.png', '.jpeg'))][:3]
+    if os.path.exists(test_path):
+        test_imgs = [os.path.join(test_path, f) for f in os.listdir(test_path)
+                    if f.lower().endswith(('.jpg', '.png', '.jpeg'))]
+        if test_imgs:
+            test_images = test_imgs
+            source_info = f"📁 Usando {len(test_imgs)} imagens do diretório TEST: {test_path}"
+            print(source_info)
+            print("✅ Imagens encontradas:")
+            for i, img in enumerate(test_imgs[:10], 1):  # Mostrar até 10 imagens
+                print(f"   {i}. {os.path.basename(img)}")
+            if len(test_imgs) > 10:
+                print(f"   ... e mais {len(test_imgs) - 10} imagens")
+            return test_images, source_info
+    
+    # PRIORIDADE 2: Imagens de validação (se test não existe)
+    if val_count > 0:
+        val_path = os.path.join(images_path, 'val')
+        val_imgs = [os.path.join(val_path, f) for f in os.listdir(val_path)
+                   if f.lower().endswith(('.jpg', '.png', '.jpeg'))][:5]
+        if val_imgs:
+            test_images = val_imgs
+            source_info = f"📁 Usando {len(val_imgs)} imagens do diretório VAL: {val_path}"
+            print(source_info)
+            return test_images, source_info
+    
+    # PRIORIDADE 3: Imagens da pasta raiz data/images
+    if tem_dados:
+        root_imgs = [os.path.join(images_path, f) for f in os.listdir(images_path)
+                    if f.lower().endswith(('.jpg', '.png', '.jpeg'))][:5]
+        if root_imgs:
+            test_images = root_imgs
+            source_info = f"📁 Usando {len(root_imgs)} imagens da pasta raiz: {images_path}"
+            print(source_info)
+            return test_images, source_info
+    
+    return test_images, source_info
 
+# Procurar por imagens de teste
+test_images, source_info = encontrar_imagens_teste()
+
+# Função para testar todas as imagens encontradas
+def executar_testes_completos(images_list):
+    """Executa testes completos em uma lista de imagens."""
+    if not images_list:
+        print("⚠️ Nenhuma imagem disponível para teste!")
+        return
+    
+    print(f"\n🧪 EXECUTANDO TESTES EM {len(images_list)} IMAGENS")
+    print("=" * 60)
+    
+    resultados_gerais = []
+    
+    for i, img_path in enumerate(images_list, 1):
+        print(f"\n📷 TESTE {i}/{len(images_list)}: {os.path.basename(img_path)}")
+        print("-" * 40)
+        
+        # Verificar se a imagem existe
+        if not os.path.exists(img_path):
+            print(f"❌ Imagem não encontrada: {img_path}")
+            continue
+            
+        # Testar imagem individual
+        results = testar_imagem_individual(img_path, show_result=True, save_result=False)
+        
+        if results:
+            # Coletar estatísticas
+            total_detections = 0
+            people_count = 0
+            phones_count = 0
+            
+            for r in results:
+                boxes = r.boxes
+                if boxes is not None:
+                    total_detections = len(boxes)
+                    for box in boxes:
+                        cls = int(box.cls[0])
+                        conf = float(box.conf[0])
+                        
+                        if conf > 0.5:
+                            if cls == 0:  # person
+                                people_count += 1
+                            elif cls == 67:  # cell phone
+                                phones_count += 1
+            
+            resultado = {
+                'imagem': os.path.basename(img_path),
+                'pessoas': people_count,
+                'celulares': phones_count,
+                'total_deteccoes': total_detections
+            }
+            resultados_gerais.append(resultado)
+            
+            print(f"✅ Teste concluído - P:{people_count} C:{phones_count} T:{total_detections}")
+        else:
+            print(f"❌ Falha no teste da imagem")
+    
+    # Resumo final dos testes
+    if resultados_gerais:
+        print(f"\n📊 RESUMO DOS TESTES")
+        print("=" * 60)
+        print(f"📈 Total de imagens testadas: {len(resultados_gerais)}")
+        print(f"👥 Total de pessoas detectadas: {sum(r['pessoas'] for r in resultados_gerais)}")
+        print(f"📱 Total de celulares detectados: {sum(r['celulares'] for r in resultados_gerais)}")
+        print(f"🔍 Total de detecções: {sum(r['total_deteccoes'] for r in resultados_gerais)}")
+        
+        print(f"\n📋 DETALHES POR IMAGEM:")
+        for r in resultados_gerais:
+            print(f"   📷 {r['imagem']}: {r['pessoas']}P, {r['celulares']}C, {r['total_deteccoes']}T")
+
+# Executar testes se há imagens disponíveis
 if test_images:
-    print(f"Testando com {len(test_images)} imagens disponíveis:")
-    for img_path in test_images:
-        testar_imagem_individual(img_path, show_result=True)
+    executar_testes_completos(test_images)
 else:
+    print("Nenhuma imagem encontrada para teste!")
+    print("\nCOMO ADICIONAR SUAS IMAGENS:")
+    print("   1. Coloque suas imagens na pasta: data/images/test/")
+    print("   2. Formatos suportados: .jpg, .png, .jpeg")
+    print("   3. Execute novamente o notebook")
+    print("\nCriando demonstração como alternativa...")
+    
     # Criar demonstração
     demo_path = criar_imagens_demo()
     if demo_path:
@@ -989,26 +1169,26 @@ else:
 CONSUMO DO MODELO
 
 Esta seção contém a configuração da classe de detecção para uso prático
-do modelo treinado em aplicações reais.
+do modelo treinado em aplicações reais e integração com app.py.
 """
 
-print("\n🔌 Configurando consumo do modelo...")
+print("\n🔧 Configurando consumo do modelo...")
 
 # Importar classe do módulo utils se disponível
 def setup_detector_class():
     """Configura a classe de detecção para uso."""
     try:
         from utils.detector import PersonPhoneDetector
-        print("✅ Classe PersonPhoneDetector importada com sucesso!")
+        print("  ✅ Classe PersonPhoneDetector importada com sucesso!")
 
         # Criar instância para teste
         detector = PersonPhoneDetector(confidence_threshold=0.5)
-        print("✅ Detector configurado e pronto para uso!")
+        print("  ✅ Detector configurado e pronto para uso!")
         return detector
 
     except ImportError as e:
-        print(f"⚠️ Módulo utils.detector não encontrado: {e}")
-        print("💡 Criando classe básica para demonstração...")
+        print(f"  ⚠️ Módulo utils.detector não encontrado: {e}")
+        print("  🔄 Criando classe básica para demonstração...")
         return create_basic_detector()
 
 def create_basic_detector():
@@ -1030,7 +1210,7 @@ def create_basic_detector():
                 results = self.model(image_source, conf=self.confidence_threshold)
                 return results
             except Exception as e:
-                print(f"❌ Erro na detecção: {e}")
+                print(f"  Erro na detecção: {e}")
                 return None
 
         def count_detections(self, results):
@@ -1092,131 +1272,42 @@ if detector and test_images:
         try:
             analysis, results = detector.analyze_image(test_img)
             if analysis:
-                print(f"📊 Análise completa da imagem:")
-                print(f"   📷 Imagem: {os.path.basename(analysis['image_path'])}")
-                print(f"   👥 Pessoas: {analysis['people']}")
-                print(f"   📱 Celulares: {analysis['phones']}")
-                print(f"   📱👥 Pessoas com celular: {analysis['people_with_phones']}")
-                print(f"   🔍 Total: {analysis['total_detections']} detecções")
-                print(f"   🎯 Confiança mínima: {analysis['confidence_threshold']}")
+                print(f"  📊 Análise completa da imagem:")
+                print(f"     📷 Imagem: {os.path.basename(analysis['image_path'])}")
+                print(f"     👥 Pessoas: {analysis['people']}")
+                print(f"     📱 Celulares: {analysis['phones']}")
+                print(f"     📱👥 Pessoas com celular: {analysis['people_with_phones']}")
+                print(f"     🔍 Total: {analysis['total_detections']} detecções")
+                print(f"     ⚙️ Confiança mínima: {analysis['confidence_threshold']}")
         except Exception as e:
-            print(f"❌ Erro no teste: {e}")
+            print(f"  ❌ Erro no teste: {e}")
 
-print("\n📱 Preparando integração com Streamlit...")
-
-# Função para criar aplicação Streamlit
-def create_streamlit_app():
-    """Informações sobre a aplicação Streamlit."""
-    print("ℹ️ A aplicação Streamlit está disponível no arquivo 'app.py'")
-    print("🚀 Para executar a aplicação:")
-    print("   1. Instale as dependências: pip install -r requirements.txt")
-    print("   2. Execute: streamlit run app.py")
-    print("   3. Acesse: http://localhost:8501")
-
-    print("\n✨ Funcionalidades da aplicação:")
-    print("   📷 Upload de imagens para detecção")
-    print("   🎥 Upload de vídeos para análise")
-    print("   📊 Visualização de resultados e métricas")
-    print("   ⚙️ Configuração de parâmetros de detecção")
-    print("   💾 Download de resultados")
-
-create_streamlit_app()
-
-"""Requerimentos streamlit"""
-
-print("\n📦 Criando arquivo de dependências...")
-
-# Criar arquivo requirements.txt atualizado
-requirements = '''streamlit>=1.28.0
-ultralytics>=8.0.0
-opencv-python>=4.8.0
-Pillow>=9.5.0
-numpy>=1.24.0
-pandas>=2.0.0
-plotly>=5.15.0
-torch>=2.0.0
-torchvision>=0.15.0
-matplotlib>=3.7.0
-scikit-learn>=1.3.0
-PyYAML>=6.0
-albumentations>=1.3.0
-seaborn>=0.12.0
-'''
-
-try:
-    with open('./requirements.txt', 'w') as f:
-        f.write(requirements.strip())
-    print("✅ Arquivo requirements.txt criado/atualizado!")
-    print("📦 Dependências incluídas:")
-    for line in requirements.strip().split('\n'):
-        if line.strip():
-            pkg = line.split('>=')[0]
-            print(f"   - {pkg}")
-except Exception as e:
-    print(f"❌ Erro ao criar requirements.txt: {e}")
-
-"""o streamlit propriamente dito, vai ter que estar em outro arquivo no repositorio final chamada app.py"""
-
-print("\n🔍 Verificando aplicação Streamlit...")
-
-app_py_path = './app.py'
-if os.path.exists(app_py_path):
-    print(f"✅ Aplicação Streamlit encontrada: {app_py_path}")
-
-    # Verificar tamanho do arquivo
-    file_size = os.path.getsize(app_py_path)
-    print(f"📊 Tamanho do arquivo: {file_size} bytes")
-
-    if file_size > 1000:  # Se arquivo tem conteúdo substancial
-        print("✅ Aplicação parece estar completa")
-        print("\n🚀 Para executar:")
-        print("   streamlit run app.py")
+# Função para executar aplicação Streamlit (app.py)
+def executar_aplicacao_streamlit():
+    """Executa a aplicação Streamlit principal (app.py)."""
+    if os.path.exists('app.py'):
+        print("\n🚀 EXECUTANDO APLICAÇÃO STREAMLIT")
+        print("="*50)
+        print("📂 Usando app.py principal")
+        print("🌐 A aplicação será aberta automaticamente no navegador")
+        print("⏹️ Para parar: Ctrl+C no terminal")
+        print("="*50)
+        
+        try:
+            subprocess.run([sys.executable, "-m", "streamlit", "run", "app.py"], check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"❌ Erro ao executar app.py: {e}")
+            print("💡 Verifique se o Streamlit está instalado: pip install streamlit")
+        except Exception as e:
+            print(f"❌ Erro inesperado: {e}")
     else:
-        print("⚠️ Arquivo pode estar incompleto")
-else:
-    print("⚠️ Arquivo app.py não encontrado")
-    print("💡 A aplicação Streamlit deve ser criada separadamente")
-
-# Resumo final do projeto
-print("\n" + "="*60)
-print("📋 RESUMO DO PROJETO - DETECÇÃO DE PESSOAS COM CELULAR")
-print("="*60)
-
-print(f"📊 Dataset:")
-print(f"   - Imagens de treino: {train_count}")
-print(f"   - Imagens de validação: {val_count}")
-print(f"   - Imagens de teste: {test_count}")
-
-print(f"\n🤖 Modelo:")
-print(f"   - Status: {model_status}")
-print(f"   - Dispositivo: {device}")
-if model:
-    print(f"   - Tipo: {type(model).__name__}")
-
-print(f"\n🎯 Classes detectadas:")
-print(f"   - 0: person (pessoa)")
-print(f"   - 67: cell phone (celular)")
-print(f"   - 999: person_with_phone (pessoa com celular)")
-
-print(f"\n📁 Estrutura do projeto:")
-print(f"   - data/: Dados e configurações")
-print(f"   - models/: Modelos treinados")
-print(f"   - utils/: Módulos de apoio")
-print(f"   - docs/: Documentação")
-print(f"   - app.py: Aplicação Streamlit")
-print(f"   - requirements.txt: Dependências")
-
-print(f"\n✅ Projeto configurado e pronto para uso!")
-print(f"💡 Próximos passos:")
-print(f"   1. Adicionar mais dados de treino se necessário")
-print(f"   2. Treinar modelo customizado")
-print(f"   3. Executar aplicação Streamlit")
-print(f"   4. Testar em dados reais")
-print("="*60)
+        print("❌ Arquivo app.py não encontrado!")
+        print("💡 Certifique-se de que o app.py está no mesmo diretório")
 
 print("="*60)
 
-"""# **Referências**
+"""
+# **Referências**
 
 Este é um item obrigatório. Inclua aqui o as referências, fontes, ou bibliografia e sites/bibliotecas que foram empregados para construir a sua proposta.
 
@@ -1241,40 +1332,20 @@ Este é um item obrigatório. Inclua aqui o as referências, fontes, ou bibliogr
 ---
 """
 
-#@title **Avaliação**
-GitHub = 10 #@param {type:"slider", min:0, max:10, step:1}
+print("\n✅ SISTEMA DE DETECÇÃO CONFIGURADO!")
+print("="*60)
+print("📱 PROJETO: Detecção de Pessoas com Celular usando YOLO")
+print("🎓 UNIVERSIDADE: Mackenzie - Faculdade de Computação")
+print("👥 EQUIPE: Andre, André, Felipe, Fernando, Francesco")
+print("="*60)
+print("\n🎯 COMO USAR:")
+print("   1. 📊 Para análise em notebook: Use as funções implementadas")
+print("   2. 🌐 Para interface web: Execute streamlit run app.py")
+print("   3. 🧪 Para testes: Execute as funções de teste")
+print("   4. 📁 Adicione suas imagens em: data/images/test/")
+print("\n💡 PRÓXIMOS PASSOS:")
+print("   • Execute: streamlit run app.py")
+print("   • Ou use: executar_aplicacao_streamlit()")
+print("   • Teste com suas próprias imagens!")
+print("\n🚀 Sistema pronto para uso!")
 
-Implementacao_Model_Code = 7 #@param {type:"slider", min:0, max:10, step:1}
-
-Aplicacao_Streamlit = 9 #@param {type:"slider", min:0, max:10, step:1}
-
-Texto_Artigo  = 6 #@param {type:"slider", min:0, max:10, step:1}
-
-Video = 7 #@param {type:"slider", min:0, max:10, step:1}
-
-Geral = 7 #@param {type:"slider", min:0, max:10, step:1}
-
-#@title **Nota Final**
-
-nota = 2*GitHub + 4*Implementacao_Model_Code + 2*Aplicacao_Streamlit + 1*Texto_Artigo + 1*Video
-
-nota = nota / 10
-
-print(f'Nota final do trabalho {nota :.1f}')
-
-import numpy as np
-import pandas as pd
-
-alunos = pd.DataFrame()
-
-lista_tia = []
-lista_nome = []
-
-for i in range(1,6):
-  exec("if Aluno" + str(i) + " !='None':  lista = Aluno" + str(i) + ".split(','); lista_tia.append(lista[0]); lista_nome.append(lista[1].upper())")
-
-alunos['tia'] = lista_tia
-alunos['nome'] = lista_nome
-alunos['nota'] = np.round(nota,1)
-print()
-display(alunos)

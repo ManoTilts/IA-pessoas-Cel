@@ -1,357 +1,208 @@
 # -*- coding: utf-8 -*-
 """
-Utilitários para processamento de dados e visualização.
-
-Este módulo contém funções auxiliares para:
-- Preparação de datasets
-- Visualização de resultados
-- Análise estatística
-- Manipulação de arquivos
+Módulo de Utilitários de Dados - DataProcessor
+Compatível com o app.py
 """
 
 import os
-import cv2
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
-import seaborn as sns
-from typing import List, Dict, Tuple
-from pathlib import Path
-import yaml
 import json
-
+import pandas as pd
+import numpy as np
+from pathlib import Path
 
 class DataProcessor:
-    """
-    Classe para processamento e análise de dados do projeto.
-    """
+    """Processador de dados para o projeto YOLO."""
     
     def __init__(self):
-        """Inicializa o processador de dados."""
-        self.supported_image_formats = ['.jpg', '.jpeg', '.png', '.bmp', '.tiff']
-        self.supported_video_formats = ['.mp4', '.avi', '.mov', '.mkv']
+        """Inicializa o processador."""
+        pass
     
-    def create_dataset_config(self, dataset_path: str, output_path: str = "data/dataset.yaml"):
-        """
-        Cria arquivo de configuração do dataset para YOLO.
+    def validate_dataset_structure(self, dataset_path):
+        """Valida a estrutura do dataset."""
+        try:
+            dataset_path = Path(dataset_path)
+            
+            required_dirs = [
+                'images/train',
+                'images/val', 
+                'images/test',
+                'labels/train',
+                'labels/val',
+                'labels/test'
+            ]
+            
+            problemas = []
+            estatisticas = {}
+            
+            # Verificar diretórios
+            for dir_name in required_dirs:
+                dir_path = dataset_path / dir_name
+                if not dir_path.exists():
+                    problemas.append(f"Diretório faltando: {dir_name}")
+                else:
+                    # Contar arquivos
+                    if 'images' in dir_name:
+                        files = list(dir_path.glob('*.jpg')) + list(dir_path.glob('*.png')) + list(dir_path.glob('*.jpeg'))
+                    else:
+                        files = list(dir_path.glob('*.txt'))
+                    
+                    estatisticas[dir_name] = len(files)
+            
+            # Verificar arquivo de configuração
+            yaml_file = dataset_path / 'dataset.yaml'
+            if not yaml_file.exists():
+                problemas.append("Arquivo dataset.yaml não encontrado")
+            
+            valido = len(problemas) == 0
+            
+            return {
+                "valido": valido,
+                "problemas": problemas,
+                "estatisticas": estatisticas
+            }
+            
+        except Exception as e:
+            return {
+                "valido": False,
+                "problemas": [f"Erro na validação: {e}"],
+                "estatisticas": {}
+            }
+    
+    def get_dataset_statistics(self, dataset_path):
+        """Retorna estatísticas do dataset."""
+        try:
+            stats = {}
+            dataset_path = Path(dataset_path)
+            
+            splits = ['train', 'val', 'test']
+            
+            for split in splits:
+                images_dir = dataset_path / 'images' / split
+                labels_dir = dataset_path / 'labels' / split
+                
+                if images_dir.exists():
+                    image_files = list(images_dir.glob('*.jpg')) + list(images_dir.glob('*.png')) + list(images_dir.glob('*.jpeg'))
+                    stats[f'{split}_images'] = len(image_files)
+                
+                if labels_dir.exists():
+                    label_files = list(labels_dir.glob('*.txt'))
+                    stats[f'{split}_labels'] = len(label_files)
+            
+            return stats
+            
+        except Exception as e:
+            print(f"❌ Erro ao obter estatísticas: {e}")
+            return {}
+    
+    def create_dataset_report(self, dataset_path, output_path):
+        """Cria relatório do dataset."""
+        try:
+            validation = self.validate_dataset_structure(dataset_path)
+            statistics = self.get_dataset_statistics(dataset_path)
+            
+            report = {
+                "dataset_path": str(dataset_path),
+                "validation": validation,
+                "statistics": statistics,
+                "timestamp": pd.Timestamp.now().isoformat()
+            }
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(report, f, indent=2, ensure_ascii=False)
+            
+            print(f"✅ Relatório salvo em: {output_path}")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Erro ao criar relatório: {e}")
+            return False
+
+def create_sample_data(num_frames=50):
+    """Cria dados de exemplo para demonstração."""
+    np.random.seed(42)  # Para resultados consistentes
+    
+    frames = list(range(num_frames))
+    
+    # Simular dados de detecção realistas
+    pessoas = np.random.poisson(3, num_frames)  # Média de 3 pessoas por frame
+    celulares = np.random.poisson(2, num_frames)  # Média de 2 celulares por frame
+    
+    # Pessoas com celular não pode ser maior que min(pessoas, celulares)
+    pessoas_com_celular = [min(p, c) for p, c in zip(pessoas, celulares)]
+    pessoas_com_celular = [max(0, pc - np.random.randint(0, 2)) for pc in pessoas_com_celular]  # Adicionar variação
+    
+    total_deteccoes = pessoas + celulares
+    
+    data = []
+    for i in range(num_frames):
+        data.append({
+            'frame': frames[i],
+            'pessoas': int(pessoas[i]),
+            'celulares': int(celulares[i]),
+            'pessoas_com_celular': int(pessoas_com_celular[i]),
+            'total_deteccoes': int(total_deteccoes[i]),
+            'timestamp': i * 0.033  # ~30 FPS
+        })
+    
+    return data
+
+def load_detection_results(file_path):
+    """Carrega resultados de detecção de um arquivo."""
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        return data
+    except Exception as e:
+        print(f"❌ Erro ao carregar resultados: {e}")
+        return None
+
+def save_detection_results(results, file_path):
+    """Salva resultados de detecção em arquivo."""
+    try:
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, ensure_ascii=False)
+        print(f"✅ Resultados salvos em: {file_path}")
+        return True
+    except Exception as e:
+        print(f"❌ Erro ao salvar resultados: {e}")
+        return False
+
+def analyze_detection_trends(results_data):
+    """Analisa tendências nos dados de detecção."""
+    try:
+        if not results_data:
+            return {}
         
-        Args:
-            dataset_path (str): Caminho para o dataset
-            output_path (str): Caminho para salvar o arquivo YAML
-        """
-        config = {
-            'path': dataset_path,
-            'train': 'images/train',
-            'val': 'images/val', 
-            'test': 'images/test',
-            'names': {
-                0: 'pessoa',
-                1: 'celular',
-                2: 'pessoa_com_celular'
+        df = pd.DataFrame(results_data)
+        
+        analysis = {
+            "tendencias": {
+                "pessoas_media": df['pessoas'].mean(),
+                "celulares_media": df['celulares'].mean(),
+                "total_frames": len(df),
+                "frame_com_mais_deteccoes": df.loc[df['total_deteccoes'].idxmax()]['frame'] if not df.empty else 0
+            },
+            "estatisticas": {
+                "pessoas": {
+                    "min": df['pessoas'].min(),
+                    "max": df['pessoas'].max(),
+                    "std": df['pessoas'].std()
+                },
+                "celulares": {
+                    "min": df['celulares'].min(),
+                    "max": df['celulares'].max(),
+                    "std": df['celulares'].std()
+                }
             }
         }
         
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        return analysis
         
-        with open(output_path, 'w', encoding='utf-8') as f:
-            yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
-        
-        print(f"✅ Configuração do dataset salva em: {output_path}")
-        return config
-    
-    def analyze_detection_results(self, results: List[Dict]) -> Dict:
-        """
-        Analisa estatisticamente os resultados de detecção.
-        
-        Args:
-            results (List[Dict]): Lista de resultados de detecção
-            
-        Returns:
-            Dict: Estatísticas dos resultados
-        """
-        if not results:
-            return {"erro": "Nenhum resultado para analisar"}
-        
-        df = pd.DataFrame(results)
-        
-        stats = {
-            "total_frames": len(df),
-            "estatisticas_pessoas": {
-                "media": df['pessoas'].mean(),
-                "mediana": df['pessoas'].median(),
-                "maximo": df['pessoas'].max(),
-                "minimo": df['pessoas'].min(),
-                "desvio_padrao": df['pessoas'].std()
-            },
-            "estatisticas_celulares": {
-                "media": df['celulares'].mean(),
-                "mediana": df['celulares'].median(),
-                "maximo": df['celulares'].max(),
-                "minimo": df['celulares'].min(),
-                "desvio_padrao": df['celulares'].std()
-            },
-            "total_deteccoes": df['total_deteccoes'].sum(),
-            "frame_com_mais_deteccoes": df.loc[df['total_deteccoes'].idxmax()].to_dict()
-        }
-        
-        return stats
-    
-    def plot_detection_timeline(self, results: List[Dict], save_path: str = None):
-        """
-        Cria gráfico temporal das detecções.
-        
-        Args:
-            results (List[Dict]): Resultados de detecção
-            save_path (str): Caminho para salvar o gráfico (opcional)
-        """
-        if not results:
-            print("❌ Nenhum resultado para plotar")
-            return
-        
-        df = pd.DataFrame(results)
-        
-        plt.figure(figsize=(12, 8))
-        
-        # Subplot 1: Detecções ao longo do tempo
-        plt.subplot(2, 2, 1)
-        plt.plot(df['frame'], df['pessoas'], label='Pessoas', marker='o', alpha=0.7)
-        plt.plot(df['frame'], df['celulares'], label='Celulares', marker='s', alpha=0.7)
-        if 'pessoas_com_celular' in df.columns:
-            plt.plot(df['frame'], df['pessoas_com_celular'], label='Pessoas c/ Celular', marker='^', alpha=0.7)
-        plt.xlabel('Frame')
-        plt.ylabel('Número de Detecções')
-        plt.title('Detecções ao Longo do Tempo')
-        plt.legend()
-        plt.grid(True, alpha=0.3)
-        
-        # Subplot 2: Distribuição de pessoas
-        plt.subplot(2, 2, 2)
-        plt.hist(df['pessoas'], bins=20, alpha=0.7, color='blue', edgecolor='black')
-        plt.xlabel('Número de Pessoas')
-        plt.ylabel('Frequência')
-        plt.title('Distribuição do Número de Pessoas')
-        plt.grid(True, alpha=0.3)
-        
-        # Subplot 3: Distribuição de celulares
-        plt.subplot(2, 2, 3)
-        plt.hist(df['celulares'], bins=20, alpha=0.7, color='green', edgecolor='black')
-        plt.xlabel('Número de Celulares')
-        plt.ylabel('Frequência')
-        plt.title('Distribuição do Número de Celulares')
-        plt.grid(True, alpha=0.3)
-        
-        # Subplot 4: Total de detecções
-        plt.subplot(2, 2, 4)
-        plt.plot(df['frame'], df['total_deteccoes'], color='red', linewidth=2)
-        plt.fill_between(df['frame'], df['total_deteccoes'], alpha=0.3, color='red')
-        plt.xlabel('Frame')
-        plt.ylabel('Total de Detecções')
-        plt.title('Total de Detecções por Frame')
-        plt.grid(True, alpha=0.3)
-        
-        plt.tight_layout()
-        
-        if save_path:
-            plt.savefig(save_path, dpi=300, bbox_inches='tight')
-            print(f"✅ Gráfico salvo em: {save_path}")
-        
-        plt.show()
-    
-    def create_detection_heatmap(self, detections: List[Dict], image_shape: Tuple[int, int]):
-        """
-        Cria mapa de calor das detecções.
-        
-        Args:
-            detections (List[Dict]): Lista de detecções com coordenadas
-            image_shape (Tuple[int, int]): Dimensões da imagem (altura, largura)
-        """
-        height, width = image_shape
-        heatmap = np.zeros((height, width))
-        
-        for detection in detections:
-            coords = detection['coordenadas']
-            x1, y1, x2, y2 = coords['x1'], coords['y1'], coords['x2'], coords['y2']
-            
-            # Garantir que as coordenadas estão dentro dos limites
-            x1, x2 = max(0, min(x1, width)), max(0, min(x2, width))
-            y1, y2 = max(0, min(y1, height)), max(0, min(y2, height))
-            
-            heatmap[int(y1):int(y2), int(x1):int(x2)] += 1
-        
-        plt.figure(figsize=(10, 8))
-        plt.imshow(heatmap, cmap='hot', interpolation='nearest')
-        plt.colorbar(label='Densidade de Detecções')
-        plt.title('Mapa de Calor das Detecções')
-        plt.xlabel('Largura (pixels)')
-        plt.ylabel('Altura (pixels)')
-        plt.show()
-        
-        return heatmap
-    
-    def export_results_to_csv(self, results: List[Dict], output_path: str):
-        """
-        Exporta resultados para arquivo CSV.
-        
-        Args:
-            results (List[Dict]): Resultados a exportar
-            output_path (str): Caminho do arquivo CSV
-        """
-        try:
-            df = pd.DataFrame(results)
-            df.to_csv(output_path, index=False, encoding='utf-8')
-            print(f"✅ Resultados exportados para: {output_path}")
-        except Exception as e:
-            print(f"❌ Erro ao exportar CSV: {e}")
-    
-    def load_sample_images(self, images_dir: str, max_images: int = 5) -> List[str]:
-        """
-        Carrega caminhos de imagens de exemplo.
-        
-        Args:
-            images_dir (str): Diretório com imagens
-            max_images (int): Número máximo de imagens
-            
-        Returns:
-            List[str]: Lista de caminhos das imagens
-        """
-        image_paths = []
-        
-        if not os.path.exists(images_dir):
-            print(f"⚠️ Diretório não encontrado: {images_dir}")
-            return image_paths
-        
-        for file in os.listdir(images_dir):
-            if any(file.lower().endswith(ext) for ext in self.supported_image_formats):
-                image_paths.append(os.path.join(images_dir, file))
-                if len(image_paths) >= max_images:
-                    break
-        
-        print(f"📷 Encontradas {len(image_paths)} imagens em {images_dir}")
-        return image_paths
-    
-    def create_detection_summary(self, results: List[Dict]) -> str:
-        """
-        Cria resumo textual dos resultados.
-        
-        Args:
-            results (List[Dict]): Resultados de detecção
-            
-        Returns:
-            str: Resumo formatado
-        """
-        if not results:
-            return "Nenhum resultado disponível para resumir."
-        
-        stats = self.analyze_detection_results(results)
-        
-        summary = f"""
-📊 RESUMO DOS RESULTADOS DE DETECÇÃO
+    except Exception as e:
+        print(f"❌ Erro na análise de tendências: {e}")
+        return {}
 
-🎯 Estatísticas Gerais:
-   • Total de frames processados: {stats['total_frames']}
-   • Total de detecções: {stats['total_deteccoes']}
-
-👥 Pessoas Detectadas:
-   • Média por frame: {stats['estatisticas_pessoas']['media']:.1f}
-   • Máximo em um frame: {stats['estatisticas_pessoas']['maximo']}
-   • Desvio padrão: {stats['estatisticas_pessoas']['desvio_padrao']:.1f}
-
-📱 Celulares Detectados:
-   • Média por frame: {stats['estatisticas_celulares']['media']:.1f}
-   • Máximo em um frame: {stats['estatisticas_celulares']['maximo']}
-   • Desvio padrão: {stats['estatisticas_celulares']['desvio_padrao']:.1f}
-
-🏆 Frame com Mais Detecções:
-   • Frame: {stats['frame_com_mais_deteccoes']['frame']}
-   • Total de detecções: {stats['frame_com_mais_deteccoes']['total_deteccoes']}
-        """
-        
-        return summary
-    
-    def validate_dataset_structure(self, dataset_path: str) -> Dict:
-        """
-        Valida a estrutura do dataset.
-        
-        Args:
-            dataset_path (str): Caminho do dataset
-            
-        Returns:
-            Dict: Resultado da validação
-        """
-        validation = {
-            "valido": True,
-            "problemas": [],
-            "estatisticas": {}
-        }
-        
-        required_dirs = ['images', 'labels']
-        
-        for dir_name in required_dirs:
-            dir_path = os.path.join(dataset_path, dir_name)
-            if not os.path.exists(dir_path):
-                validation["valido"] = False
-                validation["problemas"].append(f"Diretório ausente: {dir_name}")
-        
-        # Contar arquivos
-        if os.path.exists(os.path.join(dataset_path, 'images')):
-            images = len([f for f in os.listdir(os.path.join(dataset_path, 'images')) 
-                         if any(f.lower().endswith(ext) for ext in self.supported_image_formats)])
-            validation["estatisticas"]["total_imagens"] = images
-        
-        if os.path.exists(os.path.join(dataset_path, 'labels')):
-            labels = len([f for f in os.listdir(os.path.join(dataset_path, 'labels')) 
-                         if f.endswith('.txt')])
-            validation["estatisticas"]["total_labels"] = labels
-        
-        return validation
-
-
-def create_sample_data():
-    """
-    Cria dados de exemplo para demonstração.
-    """
-    sample_data = []
-    
-    for i in range(50):
-        frame_data = {
-            'frame': i,
-            'timestamp': i * 0.033,  # ~30 FPS
-            'pessoas': np.random.randint(0, 5),
-            'celulares': np.random.randint(0, 3),
-            'pessoas_com_celular': np.random.randint(0, 2),
-        }
-        frame_data['total_deteccoes'] = (frame_data['pessoas'] + 
-                                       frame_data['celulares'] + 
-                                       frame_data['pessoas_com_celular'])
-        sample_data.append(frame_data)
-    
-    return sample_data
-
-
-def setup_project_structure(base_path: str = "."):
-    """
-    Configura a estrutura completa do projeto.
-    
-    Args:
-        base_path (str): Caminho base do projeto
-    """
-    directories = [
-        "models",
-        "data/images/train",
-        "data/images/val", 
-        "data/images/test",
-        "data/videos",
-        "data/labels/train",
-        "data/labels/val",
-        "data/labels/test",
-        "utils",
-        "docs",
-        "results"
-    ]
-    
-    for directory in directories:
-        dir_path = os.path.join(base_path, directory)
-        os.makedirs(dir_path, exist_ok=True)
-        print(f"📁 Criado: {dir_path}")
-    
-    print("✅ Estrutura do projeto configurada com sucesso!") 
+# Função auxiliar para compatibilidade
+def get_data_processor():
+    """Retorna uma instância do DataProcessor."""
+    return DataProcessor() 
