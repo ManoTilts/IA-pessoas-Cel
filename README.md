@@ -33,7 +33,7 @@ Como Usar Nosso Sistema
 Preparando o Ambiente
 Primeiro, você precisa configurar o ambiente em seu computador:
 bash# Baixe o projeto do GitHub
-git clone https://github.com/ManoTilts/IA-pessoas-Cel/edit/main/README.md
+git clone [https://github.com/ManoTilts/IA-pessoas-Cel/edit/main/README.md](https://github.com/ManoTilts/IA-pessoas-Cel.git)
 cd IA-pessoas-Cel
 
 # Crie um ambiente isolado para o projeto
